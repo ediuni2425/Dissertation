@@ -121,6 +121,37 @@ summary(CFmodel)
 
 
 
-#Height analysis 
+#Height plots and analysis 
 
+
+earlyheight <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/earlyheight.csv")
+lateheight <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/lateheight.csv")
+
+p3 <- ggplot(earlyheight, aes(x = Plot, y = Height, fill = Treatment)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c(
+    "NoAdmixture" = "aquamarine3",
+    "LocalAdmixture" = "royalblue2",
+    "CoreEdge" = "lightpink1",
+    "RefugiumEdge" = "gold1"
+  )) +
+  theme_minimal() +
+  geom_jitter(shape = 1, width = 0.2, alpha = 0.7, size = 0.6, colour = "black") +
+  xlab("Plot") +
+  ylab("Plant Height (mm)")
+
+p4 <- ggplot(lateheight, aes(x = Plot, y = Height, fill = Treatment)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c(
+    "NoAdmixture" = "aquamarine3",
+    "LocalAdmixture" = "royalblue2",
+    "CoreEdge" = "lightpink1",
+    "RefugiumEdge" = "gold1"
+  )) +
+  theme_minimal() +
+  geom_jitter(shape = 1, width = 0.2, alpha = 0.7, size = 0.6, colour = "black") +
+  xlab("Plot") +
+  ylab("Plant Height (mm)")
+
+p3 / p4
 
