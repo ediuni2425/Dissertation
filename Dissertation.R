@@ -130,8 +130,9 @@
 
 #Height plots and analysis 
     
-earlyheight <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/earlyheight.csv")
-lateheight <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/lateheight.csv")
+    #Loading data
+    earlyheight <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/earlyheight.csv")
+    lateheight <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/lateheight.csv")
 
     #Plots
   
