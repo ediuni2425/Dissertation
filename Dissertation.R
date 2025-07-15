@@ -94,3 +94,33 @@ p1 / p2
 
 #Analysis 
 
+#Installing + loading packages
+#install.packages("lme4")
+#install.packages("lmerTest")
+#install.packages("Matrix", dependencies = TRUE, type = "source")
+
+library(lme4)
+library(lmerTest)
+
+CFdata$Block <- as.factor(CFdata$Block)
+CFdata$Plant <- as.factor(CFdata$Plant)
+CFdata$Leaf <- as.factor(CFdata$Leaf)
+CFdata$Day <- as.factor(CFdata$Day)
+
+
+CFmodel <- lmer(
+  FvFm ~ Treatment +                       
+    (1 | Block) +                           
+    (1 | Day) +                              
+    (1 | Plant) +                            
+    (1 | Plant:Leaf),                        
+  data = CFdata
+)
+
+summary(CFmodel)
+
+
+
+#Height analysis 
+
+
