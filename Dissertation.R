@@ -77,7 +77,8 @@ p1 <- ggplot(CFplot1, aes(x = plot, y = FvFm, fill = treatment)) +
       "RefugiumEdge" = "gold1"   # orange
     )) + theme_minimal() +
   geom_jitter(shape = 1, width = 0.2, alpha = 0.7, size = 0.6, colour = "black") + 
-  xlab("Plot") + ylab("Chlorophyll Fluoresence (Fv/Fm)")
+  xlab("Plot") + ylab("Chlorophyll Fluoresence (Fv/Fm)") + labs(fill="Admixture Combination") +
+  ggtitle("Independent replicate 1")
     
 p2 <- ggplot(CFplot2, aes(x = plot, y = FvFm, fill = treatment)) +
   geom_boxplot(outlier.size= 0.8) +
@@ -88,9 +89,11 @@ p2 <- ggplot(CFplot2, aes(x = plot, y = FvFm, fill = treatment)) +
       "RefugiumEdge" = "gold1"   # orange
     )) + theme_minimal() +
   geom_jitter(shape = 1, width = 0.2, alpha = 0.7, size = 0.6, colour ="black") +
-  xlab("Plot") + ylab("Chlorophyll Fluoresence (Fv/Fm)")
+  xlab("Plot") + ylab("Chlorophyll Fluoresence (Fv/Fm)") + labs(fill="Admixture Combination") +
+  ggtitle("Independent replicate 2")
 
-p1 / p2
+p1 / p2 + plot_annotation(title = "Chlorophyll Fluorescence Across Admixture Combinations")
+
 
 #Analysis 
 
@@ -123,7 +126,7 @@ summary(CFmodel)
 
 #Height plots and analysis 
 
-
+#Plots
 earlyheight <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/earlyheight.csv")
 lateheight <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/lateheight.csv")
 
@@ -138,7 +141,7 @@ p3 <- ggplot(earlyheight, aes(x = Plot, y = Height, fill = Treatment)) +
   theme_minimal() +
   geom_jitter(shape = 1, width = 0.2, alpha = 0.7, size = 0.6, colour = "black") +
   xlab("Plot") +
-  ylab("Plant Height (mm)")
+  ylab("Plant Height (mm)") + ggtitle("Early Season") + labs(fill="Admixture Combination")
 
 p4 <- ggplot(lateheight, aes(x = Plot, y = Height, fill = Treatment)) +
   geom_boxplot() +
@@ -151,7 +154,24 @@ p4 <- ggplot(lateheight, aes(x = Plot, y = Height, fill = Treatment)) +
   theme_minimal() +
   geom_jitter(shape = 1, width = 0.2, alpha = 0.7, size = 0.6, colour = "black") +
   xlab("Plot") +
-  ylab("Plant Height (mm)")
+  ylab("Plant Height (mm)") + ggtitle("Late Season") + labs(fill="Admixture Combination")
 
-p3 / p4
+p3 / p4 + plot_annotation(title = "Plant Height Across Admixture Combinations")
+
+
+#Height analysis
+
+
+#Germination plots and analysis 
+#Cumulative germination plots 
+
+cgerm2 <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/cgerm2.csv")
+
+ggplot(cgerm2, aes(x = Timepoint, y = Cumulative, color = Plot, group = Plot)) +
+  geom_line() +
+  geom_point() +
+  theme_minimal() +
+  labs(title = "Germination Over Time",
+       x = "Date",
+       y = "Number of Seedlings")
 
