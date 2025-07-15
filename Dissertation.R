@@ -161,6 +161,15 @@ p3 / p4 + plot_annotation(title = "Plant Height Across Admixture Combinations")
 
 #Height analysis
 
+earlyheightmodel <- lmer(Height ~ Treatment + (1 | Block), data = earlyheight)
+summary(earlyheightmodel)
+lateheightmodel <- lmer(Height ~ Treatment + (1 | Block), data = lateheight)
+summary(lateheightmodel)
+
+install.packages("emmeans")
+library(emmeans)
+emmeans(earlyheightmodel, pairwise ~ Treatment, adjust = "tukey")
+emmeans(lateheightmodel, pairwise ~ Treatment, adjust = "tukey")
 
 #Germination plots and analysis 
 #Cumulative germination plots 
