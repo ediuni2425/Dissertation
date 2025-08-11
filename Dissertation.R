@@ -1,16 +1,29 @@
 
+#Installing + loading packages
+
+#install.packages("lme4")
+#install.packages("lmerTest")
+#install.packages("Matrix", dependencies = TRUE, type = "source")
+#install.packages("emmeans")
+#install.packages("ggplot2")
+#install.packages("ggplot2")
+#install.packages("car")
+
+
+library(lme4)
+library(lmerTest)
+library(Matrix)
+library(emmeans)
+library(ggplot2)
+library(patchwork)
+library(car)
+
+
+
 #Chlorophyll fluorescence trial analysis 
 
     #Loading data
     cftrial <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/CFtrial.csv")
-    
-    #Installing + loading packages
-    install.packages("lme4")
-    install.packages("lmerTest")
-    install.packages("Matrix", dependencies = TRUE, type = "source")
-    
-    library(lme4)
-    library(lmerTest)
     
     #Convert categorical variables to factors
     cftrial$plot <- as.factor(cftrial$plot)
@@ -32,10 +45,7 @@
 
     #Loading data 
     germdata <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/germsummary.csv")
-    
-    #Installing and loading packages 
-    install.packages("ggplot2")
-    library(ggplot2)
+    germdata$Block <- as.factor(germdata$Block)
     
     #Plots
     
@@ -47,28 +57,33 @@
            x = "Date",
            y = "Number of Seedlings")
     
-    ggplot(germdata, aes(x = Date, y = Total, color = Plot, group = Plot)) +
+    ggplot(germdata, aes(x = Date, y = Total, group=Plot, colour = Treatment, shape = Block)) +
       geom_line() +
       geom_point() +
       theme_minimal() +
-      labs(title = "Total plants",
+      labs(title = "Total Plants Over Time",
            x = "Date",
-           y = "Total number of plants")
+           y = "Number of Plants",
+           color = "Admixture Combination",
+           shape = "Block") + 
+      scale_color_manual(values = c(
+             "NoAdmixture" = "aquamarine3",  # blue
+             "LocalAdmixture" = "royalblue2",  # green
+             "CoreEdge" = "lightpink1",  # red
+             "RefugiumEdge" = "gold1"   # orange
+           )) +
+      geom_point(size = 3)
     
     
-    
-
-#Chlorophyll fluorescence plots and analysis 
+    #Chlorophyll fluorescence plots and analysis 
     
     #Loading data
     CFdata <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/CFdata.csv")
+    CFdata2 <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/CFdata2.csv")
     CFplot1 <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/CFone.csv")
     CFplot2 <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/CFtwo.csv")
 
-    #Plots 
-    
-    install.packages("patchwork")
-    library(patchwork)
+    PlantID <- paste(CFdata$Plot, CFdata$Plant, CFdata$Day)
     
     p1 <- ggplot(CFplot1, aes(x = plot, y = FvFm, fill = treatment)) +
       geom_boxplot(outlier.size = 0.8) +
@@ -80,7 +95,7 @@
         )) + theme_minimal() +
       geom_jitter(shape = 1, width = 0.2, alpha = 0.7, size = 0.6, colour = "black") + 
       xlab("Plot") + ylab("Chlorophyll Fluoresence (Fv/Fm)") + labs(fill="Admixture Combination") +
-      ggtitle("Independent replicate 1")
+      ggtitle("Timepoint 1")
         
     p2 <- ggplot(CFplot2, aes(x = plot, y = FvFm, fill = treatment)) +
       geom_boxplot(outlier.size= 0.8) +
@@ -92,47 +107,57 @@
         )) + theme_minimal() +
       geom_jitter(shape = 1, width = 0.2, alpha = 0.7, size = 0.6, colour ="black") +
       xlab("Plot") + ylab("Chlorophyll Fluoresence (Fv/Fm)") + labs(fill="Admixture Combination") +
-      ggtitle("Independent replicate 2")
+      ggtitle("Timepoint 2")
     
     p1 / p2 + plot_annotation(title = "Chlorophyll Fluorescence Across Admixture Combinations")
     
+    ggplot(CFdata2, aes(x = Plot, y = FvFm, fill = Treatment)) +
+      geom_boxplot(outlier.size= 0.8) +
+      scale_fill_manual(values = c(
+        "NoAdmixture" = "aquamarine3",  # blue
+        "LocalAdmixture" = "royalblue2",  # green
+        "CoreEdge" = "lightpink1",  # red
+        "RefugiumEdge" = "gold1"   # orange
+      )) + theme_minimal() +
+      geom_jitter(shape = 1, width = 0.2, alpha = 0.7, size = 0.6, colour ="black") +
+      xlab("Plot") + ylab("Chlorophyll Fluoresence (Fv/Fm)") + labs(fill="Admixture Combination") + 
+      ggtitle("Chlorophyll Fluorescence Across Admixture Combinations")
     
     #Analysis 
     
-    #Installing + loading packages
-    
-    #install.packages("lme4")
-    #install.packages("lmerTest")
-    #install.packages("Matrix", dependencies = TRUE, type = "source")
-    
-    library(lme4)
-    library(lmerTest)
-    
     #Convert categorical variables to factors
-    CFdata$Block <- as.factor(CFdata$Block)
-    CFdata$Plant <- as.factor(CFdata$Plant)
-    CFdata$Leaf <- as.factor(CFdata$Leaf)
+    CFdata$Plot <- as.factor(CFdata$Plot)
+    CFdata$PlantID <- as.factor(CFdata$PlantID)
     CFdata$Day <- as.factor(CFdata$Day)
+    CFdata$Treatment <- as.factor(CFdata$Treatment)
     
+    CFdata$Treatment <- factor(CFdata$Treatment)
+    CFdata$Treatment <- relevel(CFdata$Treatment, ref = "NoAdmixture")
     
     CFmodel <- lmer(
-      FvFm ~ Treatment +                       
-        (1 | Block) +                           
-        (1 | Day) +                              
-        (1 | Plant) +                            
-        (1 | Plant:Leaf),                        
+      FvFm ~ Treatment + Day +                     
+        (1 | Plot) +                           
+        (1 | PlantID),                            
       data = CFdata
     )
     
     summary(CFmodel)
 
-
+    emmeans(CFmodel, pairwise ~ Treatment, adjust = "tukey")
+    
 
 #Height plots and analysis 
     
     #Loading data
+    
     earlyheight <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/earlyheight.csv")
     lateheight <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/lateheight.csv")
+
+    earlyheight$Treatment <- factor(earlyheight$Treatment)
+    earlyheight$Treatment <- relevel(earlyheight$Treatment, ref = "NoAdmixture")
+    
+    lateheight$Treatment <- factor(lateheight$Treatment)
+    lateheight$Treatment <- relevel(lateheight$Treatment, ref = "NoAdmixture")
 
     #Plots
   
@@ -162,35 +187,57 @@
       xlab("Plot") +
       ylab("Plant Height (mm)") + ggtitle("Late Season") + labs(fill="Admixture Combination")
     
-    p3 / p4 + plot_annotation(title = "Plant Height Across Admixture Combinations")
-    
+    p3 / p4 + plot_annotation(title = "Plant Height Across Admixture Combinations") 
+
     
     #Analysis
     
-    earlyheightmodel <- lmer(Height ~ Treatment + (1 | Block), data = earlyheight)
+    #Linear mixed model + post-hoc test
+    
+    earlyheightmodel <- lmer(Height ~ Treatment + (1 | Plot) + (1 | Block), data = earlyheight)
     summary(earlyheightmodel)
     
-    lateheightmodel <- lmer(Height ~ Treatment + (1 | Block), data = lateheight)
+  
+    lateheightmodel <- lmer(Height ~ Treatment + (1|Plot) + (1 | Block), data = lateheight)
     summary(lateheightmodel)
     
-    #install.packages("emmeans")
-    library(emmeans)
+  
+    
     emmeans(earlyheightmodel, pairwise ~ Treatment, adjust = "tukey")
     emmeans(lateheightmodel, pairwise ~ Treatment, adjust = "tukey")
     
-
-
-#Germination plots and analysis 
+    #Analysing density-dependent growth
+    lateheightmodel2 <- lmer(Height ~ Treatment + Crowd + (1|Plot) + (1 | Block), data = lateheight)
+    summary(lateheightmodel2)
     
-    #Cumulative germination plots 
+   #Total plants in a plot analysis
     
-    cgerm2 <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/cgerm2.csv")
+    planttotal <- read.csv("~/Desktop/MSc EEB/WD/Dissertation/germtotal.csv")
     
-    ggplot(cgerm2, aes(x = Timepoint, y = Cumulative, color = Plot, group = Plot)) +
-      geom_line() +
-      geom_point() +
+   #Plot
+    p7 <- ggplot(planttotal, aes(x = Treatment, y = Plants, fill= Treatment)) +
+      geom_boxplot() +
+      scale_fill_manual(values = c(
+        "NoAdmixture" = "aquamarine3",
+        "LocalAdmixture" = "royalblue2",
+        "CoreEdge" = "lightpink1",
+        "RefugiumEdge" = "gold1"
+      )) +
       theme_minimal() +
-      labs(title = "Germination Over Time",
-           x = "Date",
-           y = "Number of Seedlings")
+      geom_jitter(shape = 1, width = 0.2, alpha = 0.7, size = 0.6, colour = "black") +
+      xlab("Admixture Combination") +
+      ylab("Number of Plants") + ggtitle("Final Population Census per Admixture Combination")
+  
+    p7
+    
+    #Analysis
+    
+    planttotal$Treatment <- factor(planttotal$Treatment)
+    planttotal$Treatment <- relevel(planttotal$Treatment, ref = "NoAdmixture")
+    
+    totalplant <- lmer(Plants ~ Treatment + (1 | Block), data = planttotal)
+    summary(totalplant)   
 
+    
+    emmeans(totalplant, pairwise ~ Treatment, adjust = "tukey")    
+    

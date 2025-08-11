@@ -1,0 +1,13 @@
+Block,Treatment,Plot,Plants
+1,NoAdmixture,NA1,35
+1,LocalAdmixture,LA1,493
+1,CoreEdge,CE1,68
+1,RefugiumEdge,RE1,92
+2,NoAdmixture,NA2,300
+2,LocalAdmixture,LA2,153
+2,CoreEdge,CE2,136
+2,RefugiumEdge,RE2,144
+3,NoAdmixture,NA3,470
+3,LocalAdmixture,LA3,443
+3,CoreEdge,CE3,434
+3,RefugiumEdge,RE3,135
