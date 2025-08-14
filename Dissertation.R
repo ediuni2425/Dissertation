@@ -161,19 +161,7 @@ library(car)
 
     #Plots
   
-    p3 <- ggplot(earlyheight, aes(x = Plot, y = Height, fill = Treatment)) +
-      geom_boxplot() +
-      scale_fill_manual(values = c(
-        "NoAdmixture" = "aquamarine3",
-        "LocalAdmixture" = "royalblue2",
-        "CoreEdge" = "lightpink1",
-        "RefugiumEdge" = "gold1"
-      )) +
-      theme_minimal() +
-      geom_jitter(shape = 1, width = 0.2, alpha = 0.7, size = 0.6, colour = "black") +
-      xlab("Plot") +
-      ylab("Plant Height (mm)") + ggtitle("Early Season") + labs(fill="Admixture Combination")
-    
+
     p4 <- ggplot(lateheight, aes(x = Plot, y = Height, fill = Treatment)) +
       geom_boxplot() +
       scale_fill_manual(values = c(
@@ -185,25 +173,22 @@ library(car)
       theme_minimal() +
       geom_jitter(shape = 1, width = 0.2, alpha = 0.7, size = 0.6, colour = "black") +
       xlab("Plot") +
-      ylab("Plant Height (mm)") + ggtitle("Late Season") + labs(fill="Admixture Combination")
+      ylab("Plant Height (mm)") + ggtitle("Plant Height Across Admixture Combinations") + labs(fill="Admixture Combination")
     
-    p3 / p4 + plot_annotation(title = "Plant Height Across Admixture Combinations") 
-
+    p4
     
     #Analysis
     
     #Linear mixed model + post-hoc test
     
-    earlyheightmodel <- lmer(Height ~ Treatment + (1 | Plot) + (1 | Block), data = earlyheight)
-    summary(earlyheightmodel)
-    
+   
   
     lateheightmodel <- lmer(Height ~ Treatment + (1|Plot) + (1 | Block), data = lateheight)
     summary(lateheightmodel)
     
   
     
-    emmeans(earlyheightmodel, pairwise ~ Treatment, adjust = "tukey")
+
     emmeans(lateheightmodel, pairwise ~ Treatment, adjust = "tukey")
     
     #Analysing density-dependent growth
